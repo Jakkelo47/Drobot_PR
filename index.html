@@ -18,9 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* ================================================= */
-        /* --- 1. CORRECCIONES DE ICONOS (VECTORES SVG) --- */
-        /* ================================================= */
         .borrar-estilo {
             background: transparent !important;
             border: none !important;
@@ -32,9 +29,6 @@
             line-height: 24px; /* Centra el icono verticalmente */
         }
 
-        /* ========================================= */
-        /* --- 2. ESTRUCTURA BASE Y LAYOUT MAPA --- */
-        /* ========================================= */
         * { box-sizing: border-box; }
         
         html, body { 
@@ -63,7 +57,7 @@
         /* --- LOGOS Y TITULOS --- */
         .logo-area { display: flex; align-items: center; height: 100%; }
         
-        /* Caja blanca del logo */
+        
         .logo-box {
             background-color: white; padding: 5px 12px;
             border-radius: 6px; margin-right: 15px;
@@ -86,10 +80,8 @@
             border-left: 1px solid #C3935D; padding-left: 20px; 
             font-weight: 600; height: 40px; display: flex; align-items: center;
         }
-
-        /* ========================================= */
         /* --- 3. CONTROLES Y MENÚ DE CAPAS --- */
-        /* ========================================= */
+
         .leaflet-bar {
             box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
             border: none !important; border-radius: 8px !important; overflow: hidden;
@@ -105,7 +97,6 @@
             border-left: 3px solid #C3935D !important;
         }
 
-        /* Menú de Capas Desplegado */
         .leaflet-control-layers {
             border: none !important; border-radius: 12px !important;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
@@ -122,10 +113,7 @@
             margin-bottom: 6px; font-size: 13px; cursor: pointer; transition: color 0.2s;
         }
         .leaflet-control-layers label:hover { color: #A21131; }
-
-        /* ========================================= */
         /* --- 4. POPUPS (TARJETAS) --- */
-        /* ========================================= */
         .leaflet-popup-content-wrapper {
             border-radius: 16px !important;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
@@ -136,17 +124,13 @@
             min-width: 300px !important;
         }
         
-        /* Utilidades para Agebs y Manzanas */
         .leaflet-tooltip.label-ageb {
             background: transparent; border: none; box-shadow: none;
         }
         .leaflet-popup-content table tr:first-child { display: none !important; }
 
-        /* ========================================= */
-        /* --- 5. VISOR DE FOTOS (MODAL SIMPLE) --- */
-        /* ========================================= */
+        /* --- 5. VISOR DE FOTOS  --- */
         #image-modal.modal-overlay {
-            /* Este ID específico se usa para las fotos, usa lógica simple */
             z-index: 100000;
         }
         .modal-content {
@@ -162,24 +146,20 @@
             font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer;
         }
 
-        /* ================================================== */
         /* --- 6. DASHBOARD CORREGIDO (CENTRO Y ANIMACIÓN) --- */
-        /* ================================================== */
-        
-        /* Fondo Oscuro con Centrado Flexbox */
         .modal-overlay {
-            display: none; /* JS lo activa con 'flex' */
+            display: none; 
             position: fixed; z-index: 99999;
             left: 0; top: 0; width: 100%; height: 100%;
             background-color: rgba(0,0,0,0.85);
             backdrop-filter: blur(4px);
             
-            /* ESTO CENTRA LA TARJETA PERFECTAMENTE */
+          
             align-items: center;
             justify-content: center;
         }
 
-        /* La Tarjeta del Gráfico */
+        
         .chart-card-drobot {
             background: white;
             border-radius: 16px;
@@ -188,7 +168,7 @@
             overflow: hidden;
             display: flex; flex-direction: column;
             
-            /* ANIMACIÓN SUAVE */
+          
             animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
 
@@ -197,7 +177,6 @@
             100% { transform: translateY(0) scale(1); opacity: 1; } 
         }
 
-        /* Partes internas del Dashboard */
         .chart-header-drobot {
             background: #7E1928 !important; border-bottom: 3px solid #C3935D !important;
             color: white; padding: 15px 25px;
@@ -220,7 +199,6 @@
             box-shadow: 0 4px 10px rgba(126, 25, 40, 0.3);
         }
 
-        /* Pestañas (Tabs) */
         .chart-tabs {
             display: flex; background: #f1f2f6; padding: 5px; gap: 5px; border-bottom: 1px solid #ddd;
         }
@@ -235,11 +213,9 @@
             background: white; color: #922B21; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        /* ========================================= */
         /* --- 7. SLIDER GOOGLE EARTH (OCULTO) --- */
-        /* ========================================= */
         .btn-google-earth {
-            display: none !important; /* <--- OCULTO POR INSTRUCCIÓN DEL JEFE */
+            display: none !important;
             background-color: #333 !important; 
             border-radius: 50% !important;
             width: 40px !important; height: 40px !important;
@@ -249,12 +225,10 @@
             transition: transform 0.2s, background-color 0.2s; z-index: 9999 !important;
         }
         .leaflet-sbs-divider, .leaflet-sbs-range, .sbs-handle-visual, .year-chip {
-            display: none !important; /* Ocultamos también los accesorios del slider */
+            display: none !important; 
         }
 
-        /* ========================================= */
         /* --- 8. RESPONSIVIDAD (MÓVIL) --- */
-        /* ========================================= */
         .panel-movil-oculto {
             display: none; position: fixed; bottom: -100%; left: 0; width: 100%;
             background: white; border-radius: 20px 20px 0 0;
@@ -277,7 +251,6 @@
             .client-area { display: none; } 
             .leaflet-popup { display: none !important; }
             
-            /* Botones abajo a la derecha */
             .leaflet-top.leaflet-left {
                 top: auto !important; left: auto !important;
                 bottom: 30px !important; right: 15px !important;   
@@ -448,11 +421,8 @@
     bounds_group.addLayer(layer_dji_fly_20250722_185256_0182_1769184314666_photo_modified_5);
     map.addLayer(layer_dji_fly_20250722_185256_0182_1769184314666_photo_modified_5);
 
-    // ==============================================================
-    // --- BLOQUE MAESTRO LIMPIO: TARJETAS, LUMINARIAS Y BACHES ---
-    // ==============================================================
+    //TARJETAS, LUMINARIAS Y BACHES ---
 
-    // --- 1. CONFIGURACIÓN VISUAL ---
     const COLOR_SUBTITLE = '#546e7a';
     const COLOR_TEXT = '#2c3e50';
     var placeholderFoto = `
@@ -461,7 +431,6 @@
             <div style="font-size: 11px; font-weight: 600; color: #90a4ae; text-transform: uppercase; letter-spacing: 0.5px;">Sin Evidencia Fotográfica</div>
         </div>`;
 
-    // --- 2. FUNCIÓN DE TARJETA PROFESIONAL (V8) ---
     function generarTarjetaProfesional(props, fotoHtml, tituloCategoria, iconoClase, colorCabecera) {
         var obs = props['Observaciones'];
         var obsHtml = (obs && obs !== "" && obs.toLowerCase() !== "ninguno")
@@ -502,7 +471,6 @@
         </div>`;
     }
 
-    // --- 3. GENERADORES DE ICONOS (Vectores SVG) ---
     function crearIconoLuz(color) {
         return L.divIcon({ className: 'borrar-estilo', iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -10],
             html: `<div style="width: 24px; height: 24px; filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.3));"><svg viewBox="0 0 100 100" width="24" height="24"><circle cx="50" cy="50" r="40" fill="${color}" stroke="white" stroke-width="12" /></svg></div>`
@@ -514,9 +482,9 @@
         });
     }
 
-    // --- 4. CAPAS DE LUMINARIAS (Con colores) ---
+    // --- 4. CAPAS DE LUMINARIAS  ---
     
-    // OTRO (#d35400)
+    // OTRO 
     function pop_Otro_6(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -526,7 +494,7 @@
     var layer_Otro_6 = new L.geoJson(json_Otro_6, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Otro_6, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#e67e22') }); } });
     bounds_group.addLayer(layer_Otro_6); map.addLayer(layer_Otro_6);
 
-    // INTERMITENTE (#8e44ad)
+    // INTERMITENTE 
     function pop_Intermitente_7(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -536,7 +504,7 @@
     var layer_Intermitente_7 = new L.geoJson(json_Intermitente_7, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Intermitente_7, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#9b59b6') }); } });
     bounds_group.addLayer(layer_Intermitente_7); map.addLayer(layer_Intermitente_7);
 
-    // DIRECTA (#f39c12)
+    // DIRECTA 
     function pop_Directa_8(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -546,7 +514,7 @@
     var layer_Directa_8 = new L.geoJson(json_Directa_8, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Directa_8, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#f1c40f') }); } });
     bounds_group.addLayer(layer_Directa_8); map.addLayer(layer_Directa_8);
 
-    // DAÑADO (#c0392b)
+    // DAÑADO 
     function pop_Daado_9(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -556,7 +524,7 @@
     var layer_Daado_9 = new L.geoJson(json_Daado_9, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Daado_9, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#e74c3c') }); } });
     bounds_group.addLayer(layer_Daado_9); map.addLayer(layer_Daado_9);
 
-    // BUENO (#27ae60)
+    // BUENO 
     function pop_Bueno_10(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -566,7 +534,7 @@
     var layer_Bueno_10 = new L.geoJson(json_Bueno_10, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Bueno_10, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#2ecc71') }); } });
     bounds_group.addLayer(layer_Bueno_10); map.addLayer(layer_Bueno_10);
 
-    // APAGADA (#2c3e50)
+    // APAGADA 
     function pop_Apagada_11(feature, layer) {
         var props = feature.properties;
         var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
@@ -576,7 +544,7 @@
     var layer_Apagada_11 = new L.geoJson(json_Apagada_11, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Apagada_11, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#34495e') }); } });
     bounds_group.addLayer(layer_Apagada_11); map.addLayer(layer_Apagada_11);
 
-    // --- 5. CAPAS DE BACHES (Con colores) ---
+    // --- 5. CAPAS DE BACHES ---
     function pop_BacheGeneral(feature, layer, colorRiesgo) {
         var props = feature.properties;
         var nombreFoto = props['Foto_Evidencia']; 
@@ -590,7 +558,7 @@
         layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
     }
 
-    // RIESGO ALTO (#c0392b)
+    // RIESGO ALTO 
     var layer_RiesgoAlto;
     if (typeof json_RiesgoAlto_15 !== 'undefined') {
         layer_RiesgoAlto = new L.geoJson(json_RiesgoAlto_15, { pane: 'pane_PuntosAltos',
@@ -600,7 +568,7 @@
         bounds_group.addLayer(layer_RiesgoAlto); map.addLayer(layer_RiesgoAlto);
     } else { layer_RiesgoAlto = L.layerGroup(); }
 
-    // RIESGO MEDIO (#d35400)
+    // RIESGO MEDIO 
     var layer_RiesgoMedio;
     if (typeof json_RiesgoMedio_14 !== 'undefined') {
         layer_RiesgoMedio = new L.geoJson(json_RiesgoMedio_14, { pane: 'pane_PuntosAltos',
@@ -610,7 +578,7 @@
         bounds_group.addLayer(layer_RiesgoMedio); map.addLayer(layer_RiesgoMedio);
     } else { layer_RiesgoMedio = L.layerGroup(); }
 
-    // RIESGO BAJO (#f39c12)
+    // RIESGO BAJO 
     var layer_RiesgoBajo;
     if (typeof json_RiesgoBajo_13 !== 'undefined') {
         layer_RiesgoBajo = new L.geoJson(json_RiesgoBajo_13, { pane: 'pane_PuntosAltos',
@@ -625,8 +593,6 @@
     map.createPane('pane_Alumbradopostes_12'); map.getPane('pane_Alumbradopostes_12').style.zIndex = 412;
     var layer_Alumbradopostes_12 = new L.geoJson(json_Alumbradopostes_12, { attribution: '', interactive: false, pane: 'pane_Alumbradopostes_12', onEachFeature: pop_Alumbradopostes_12, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Alumbradopostes_12_0(feature)); } });
     bounds_group.addLayer(layer_Alumbradopostes_12);
-
-    /* --- 1. CREACIÓN DE CAPAS DE GOBIERNO --- */
 
     // --- A. LÍMITES MUNICIPALES ---
     map.createPane('pane_Limites');
@@ -962,8 +928,7 @@
             ]
         },
 
-        // GRUPO 3: INFRAESTRUCTURA (Lámparas)
-        // GRUPO 3: INFRAESTRUCTURA (CON SUBGRUPOS)
+        // GRUPO 3: INFRAESTRUCTURA 
         {
             label: '<b>Infraestructura Urbana</b>',
             selectAllCheckbox: true,
@@ -972,7 +937,7 @@
                 {
                     label: '💡 Alumbrado Público',
                     selectAllCheckbox: true,
-                    collapsed: true, // Que empiece cerrado para no ocupar mucho espacio
+                    collapsed: true, 
                     children: [
                         {label: '⚫ Apagada', layer: layer_Apagada_11},
                         {label: '🟢 Operativo (Bueno)', layer: layer_Bueno_10},
@@ -986,7 +951,7 @@
                 {
                     label: '🚧 Estado del Pavimento (baches)',
                     selectAllCheckbox: true,
-                    collapsed: false, // Este abierto para que se vea la novedad
+                    collapsed: false, 
                     children: [
                         {label: '🔺 Riesgo Alto', layer: layer_RiesgoAlto},
                         {label: '🔸 Riesgo Medio', layer: layer_RiesgoMedio},
@@ -1330,7 +1295,7 @@
 
 
     <style>
-    /* --- ESTILOS DEL DASHBOARD DROBOT --- */
+    /* --- ESTILOS DEL DASHBOARD --- */
     .chart-card-drobot {
         background: white;
         border-radius: 16px; 
@@ -1430,15 +1395,15 @@
 
     // 2. Variables Globales
     var myChart;
-    var currentTopic = 'luminarias'; // Tema por defecto
+    var currentTopic = 'luminarias'; 
 
-    // DATOS (Se calculan al abrir)
+    // DATOS 
     var dataLuminarias = {};
     var dataBaches = {};
     var dataGeneral = {};
 
     function calcularDatos() {
-        // A. LUMINARIAS (Se queda igual)
+        // A. LUMINARIAS 
         dataLuminarias = {
             labels: ['Apagada', 'Operativo', 'Dañado', 'Directa', 'Intermitente', 'Otro'],
             data: [
@@ -1452,7 +1417,7 @@
             colors: ['#34495e', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', '#e67e22']
         };
 
-        // B. BACHES (Se queda igual)
+        // B. BACHES
         dataBaches = {
             labels: ['Riesgo Alto', 'Riesgo Medio', 'Riesgo Bajo'],
             data: [
@@ -1462,32 +1427,27 @@
             ],
             colors: ['#c0392b', '#d35400', '#f39c12']
         };
-
-        // --- C. GENERAL (CORREGIDO: SOLO PROBLEMAS) ---
         
-        // 1. Calcular fallas de luz (Total menos las "Operativo")
+        // 1. Calcular fallas de luz 
         var totalLuces = dataLuminarias.data.reduce((a, b) => a + b, 0);
-        var lucesBuenas = dataLuminarias.data[1]; // El índice 1 es 'Operativo'
-        var fallasAlumbrado = totalLuces - lucesBuenas; // Solo contamos las malas
+        var lucesBuenas = dataLuminarias.data[1]; 
+        var fallasAlumbrado = totalLuces - lucesBuenas; 
 
         // 2. Calcular total de baches
         var totalBaches = dataBaches.data.reduce((a, b) => a + b, 0);
         
         dataGeneral = {
-            labels: ['Fallas de Alumbrado', 'Baches Registrados'], // Etiquetas claras
+            labels: ['Fallas de Alumbrado', 'Baches Registrados'],
             data: [fallasAlumbrado, totalBaches],
-            // Usamos colores de "Alerta" (Rojo vs Naranja)
             colors: ['#c0392b', '#e67e22'] 
         };
     }
 
-    // 3. Abrir Dashboard
     function openChart(e) {
         if(e) e.preventDefault();
-        calcularDatos(); // Recalcular siempre por si cambiaron filtros
+        calcularDatos(); 
         document.getElementById("chart-modal").style.display = "flex";
         
-        // Iniciar en la pestaña por defecto
         switchTopic('luminarias', document.querySelector('.tab-btn')); 
     }
 
@@ -1495,16 +1455,13 @@
         document.getElementById("chart-modal").style.display = "none";
     }
 
-    // 4. CAMBIAR TEMA (PESTAÑAS)
     function switchTopic(topic, btn) {
         currentTopic = topic;
         
-        // Actualizar botones visualmente
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         if(btn) btn.classList.add('active');
         else document.querySelectorAll('.tab-btn')[0].classList.add('active');
 
-        // Seleccionar datos según el tema
         var dataset, titulo;
         if (topic === 'luminarias') {
             dataset = dataLuminarias;
@@ -1517,7 +1474,6 @@
             titulo = "Diagnóstico de Problemas";
         }
 
-        // Actualizar título
         document.getElementById('chartTitle').innerHTML = `<i class="fas fa-chart-pie"></i> ${titulo}`;
 
         // Renderizar gráfica
@@ -1525,7 +1481,6 @@
     }
 
     // 5. RENDERIZAR GRÁFICA
-    // 5. RENDERIZAR GRÁFICA (CORREGIDA)
     function renderChart(dataset, type = 'bar') {
         var ctx = document.getElementById('drobotChart').getContext('2d');
         
@@ -1538,15 +1493,13 @@
                 datasets: [{
                     label: 'Cantidad',
                     data: dataset.data,
-                    backgroundColor: dataset.colors, // Colorea las barras y los puntos
+                    backgroundColor: dataset.colors,
                     
-                    /* --- CORRECCIÓN AQUÍ --- */
-                    // Si es 'line', la línea es Gris Oscuro (#555). Si es barra/pastel, el borde es Blanco.
                     borderColor: type === 'line' ? '#555555' : '#ffffff',
                     
                     borderWidth: 2,
-                    fill: false, // Evita que la línea rellene el fondo de color
-                    tension: 0.3 // Suaviza un poco las curvas de la línea
+                    fill: false, 
+                    tension: 0.3 
                 }]
             },
             options: {
@@ -1567,13 +1520,11 @@
         });
     }
 
-    // 6. CAMBIAR TIPO DE GRÁFICA (Botones de abajo)
     function updateChartType(newType, btn) {
-        // Actualizar estilo botones
         document.querySelectorAll('.chart-controls-drobot .chart-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // Recuperar datos actuales y redibujar
+
         var dataset;
         if (currentTopic === 'luminarias') dataset = dataLuminarias;
         else if (currentTopic === 'baches') dataset = dataBaches;

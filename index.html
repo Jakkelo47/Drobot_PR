@@ -6,7 +6,7 @@
     <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="css/leaflet.css">
     <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
     <link rel="stylesheet" href="css/qgis2web.css">
@@ -18,214 +18,136 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        /* ================================================= */
+        /* --- 1. CORRECCIONES DE ICONOS (VECTORES SVG) --- */
+        /* ================================================= */
+        .borrar-estilo {
+            background: transparent !important;
+            border: none !important;
+        }
+        .borrar-estilo i {
+            width: 100%;
+            height: 100%;
+            display: block;
+            line-height: 24px; /* Centra el icono verticalmente */
+        }
+
+        /* ========================================= */
+        /* --- 2. ESTRUCTURA BASE Y LAYOUT MAPA --- */
+        /* ========================================= */
+        * { box-sizing: border-box; }
         
-        .panel-movil-oculto {
-            display: none; 
-        }
-
-        /* --- ESTILOS BASE Y ESTRUCTURA (FLEXBOX) --- */
-        .leaflet-tooltip.label-ageb {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-        }
-
-        * {
-            box-sizing: border-box; 
-        }
-
         html, body { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%; 
             overflow: hidden; 
-            display: flex;           
-            flex-direction: column;  
+            display: flex; flex-direction: column;  
         }
 
-        /* --- BARRA SUPERIOR --- */
         #top-bar {
             flex: 0 0 70px; 
             background: #7E1928; 
             border-bottom: 4px solid #C3935D; 
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            display: flex; align-items: center; justify-content: space-between;
             padding: 0 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            z-index: 3000;
-            position: relative;
+            z-index: 3000; position: relative;
         }
 
         #map {
-            flex: 1; 
-            width: 100%;
-            height: auto !important; 
-            margin: 0;
-            background-color: #f0f0f0;
-            z-index: 1;
+            flex: 1; width: 100%; height: auto !important; 
+            margin: 0; background-color: #f0f0f0; z-index: 1;
         }
 
-        .logo-area {
-            display: flex;
-            align-items: center; 
-            height: 100%;
+        /* --- LOGOS Y TITULOS --- */
+        .logo-area { display: flex; align-items: center; height: 100%; }
+        
+        /* Caja blanca del logo */
+        .logo-box {
+            background-color: white; padding: 5px 12px;
+            border-radius: 6px; margin-right: 15px;
+            height: 60px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
+        
         #drobot-logo { 
-            height: 45px;
-            width: auto;
-            margin-right: 15px; 
-            display: block; 
-            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+            height: 90%; width: auto; 
+            display: block; filter: none;
         }
 
         .drobot-title { 
-            font-weight: 700; 
-            font-size: 18px;
-            letter-spacing: 0.5px;
-            line-height: 1.2;
-            text-transform: uppercase;
+            font-weight: 700; font-size: 18px; letter-spacing: 0.5px;
+            line-height: 1.2; text-transform: uppercase;
         }
 
         .client-area { 
-            font-size: 13px; 
-            color: rgba(255,255,255,0.9); 
-            border-left: 1px solid #C3935D; 
-            padding-left: 20px; 
-            font-weight: 600;
-            height: 40px;
-            display: flex;
-            align-items: center;
+            font-size: 13px; color: rgba(255,255,255,0.9); 
+            border-left: 1px solid #C3935D; padding-left: 20px; 
+            font-weight: 600; height: 40px; display: flex; align-items: center;
         }
 
-        /* --- CONTROLES DEL MAPA --- */
+        /* ========================================= */
+        /* --- 3. CONTROLES Y MENÚ DE CAPAS --- */
+        /* ========================================= */
         .leaflet-bar {
             box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-            border: none !important;
-            border-radius: 8px !important;
-            overflow: hidden;
+            border: none !important; border-radius: 8px !important; overflow: hidden;
         }
-
-        .leaflet-bar a, 
-        .leaflet-control-layers-toggle {
-            background-color: white !important;
-            color: #444 !important;
-            width: 36px !important;
-            height: 36px !important;
-            line-height: 36px !important;
-            font-weight: bold !important;
-            border-bottom: 1px solid #f0f0f0 !important;
+        .leaflet-bar a, .leaflet-control-layers-toggle {
+            background-color: white !important; color: #444 !important;
+            width: 36px !important; height: 36px !important; line-height: 36px !important;
+            font-weight: bold !important; border-bottom: 1px solid #f0f0f0 !important;
             transition: all 0.2s ease;
         }
-
         .leaflet-bar a:hover {
-            background-color: #f8f9fa !important;
-            color: #A21131 !important; 
+            background-color: #f8f9fa !important; color: #A21131 !important; 
             border-left: 3px solid #C3935D !important;
         }
 
-        /* --- MENÚ DE CAPAS --- */
+        /* Menú de Capas Desplegado */
         .leaflet-control-layers {
-            border: none !important;
-            border-radius: 12px !important;
+            border: none !important; border-radius: 12px !important;
             box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
             padding: 15px !important;
             background: rgba(255, 255, 255, 0.95) !important;
             backdrop-filter: blur(5px);
         }
-
         .leaflet-control-layers-group-label {
-            color: #7E1928;
-            font-weight: 700;
-            font-size: 14px;
-            margin-top: 8px;
-            display: block;
-            border-bottom: 2px solid #C3935D; 
-            padding-bottom: 4px;
-            margin-bottom: 8px;
+            color: #7E1928; font-weight: 700; font-size: 14px;
+            margin-top: 8px; display: block; border-bottom: 2px solid #C3935D; 
+            padding-bottom: 4px; margin-bottom: 8px;
         }
-
         .leaflet-control-layers label {
-            margin-bottom: 6px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: color 0.2s;
+            margin-bottom: 6px; font-size: 13px; cursor: pointer; transition: color 0.2s;
         }
-        
-        .leaflet-control-layers label:hover {
-            color: #A21131; 
-        }
+        .leaflet-control-layers label:hover { color: #A21131; }
 
-        /* --- POPUPS --- */
+        /* ========================================= */
+        /* --- 4. POPUPS (TARJETAS) --- */
+        /* ========================================= */
         .leaflet-popup-content-wrapper {
-            border-radius: 12px !important;
+            border-radius: 16px !important;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2) !important;
-            padding: 0 !important;
-            overflow: hidden;
+            padding: 0 !important; overflow: hidden;
         }
-        
         .leaflet-popup-content {
-            margin: 15px !important;
-            line-height: 1.6;
-            font-size: 13px;
+            margin: 0 !important; line-height: 1.6; font-size: 13px;
+            min-width: 300px !important;
         }
         
-        .leaflet-popup-content h3 {
-            background: #7E1928; /* Guinda Oscuro */
-            border-bottom: 3px solid #C3935D; /* Dorado */
-            color: white;
-            margin: -15px -15px 10px -15px;
-            padding: 10px 15px;
-            font-size: 14px;
-            text-transform: uppercase;
+        /* Utilidades para Agebs y Manzanas */
+        .leaflet-tooltip.label-ageb {
+            background: transparent; border: none; box-shadow: none;
         }
-
-        /* --- UTILIDADES --- */
-        .leaflet-top { top: 20px; }
-        .leaflet-left { left: 20px; }
-        .leaflet-right { right: 20px; }
-        .css_Alumbradopostes_12 { display: none !important; }
-
-        /* --- TABLA POPUP --- */
         .leaflet-popup-content table tr:first-child { display: none !important; }
-        .leaflet-popup-content table {
-            width: 100% !important; border-collapse: separate !important;
-            border-spacing: 0 8px !important; font-size: 14px !important; margin: 10px 0 !important;
-        }
-        .leaflet-popup-content th {
-            text-align: left !important; color: #666 !important; font-weight: 500 !important;
-            vertical-align: top !important; width: 30% !important; padding-right: 5px !important;
-        }
-        .leaflet-popup-content td {
-            text-align: left !important; color: #333 !important;
-            font-weight: 700 !important;
-            vertical-align: top !important; width: 70% !important; word-break: break-word !important;
-        }
 
-        /* --- MINIATURAS Y VISOR --- */
-        .leaflet-popup-content td img, .leaflet-popup-content td a img {
-            display: block !important; width: 100% !important; max-width: 300px !important;
-            height: 200px !important;
-            object-fit: cover !important;
-            border-radius: 12px !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-            margin-top: 10px !important;
-            cursor: zoom-in !important;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .leaflet-popup-content td img:hover {
-            transform: scale(1.03);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
-        }
-        .modal-overlay {
-            display: none;
-            position: fixed; z-index: 99999;
-            padding-top: 50px; left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.92);
-            backdrop-filter: blur(5px);
+        /* ========================================= */
+        /* --- 5. VISOR DE FOTOS (MODAL SIMPLE) --- */
+        /* ========================================= */
+        #image-modal.modal-overlay {
+            /* Este ID específico se usa para las fotos, usa lógica simple */
+            z-index: 100000;
         }
         .modal-content {
             margin: auto; display: block; width: auto; height: auto;
@@ -234,35 +156,55 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             animation: zoom 0.4s;
         }
+        @keyframes zoom { from {transform:scale(0.8); opacity:0} to {transform:scale(1); opacity:1} }
         .close-modal {
             position: absolute; top: 20px; right: 35px; color: #f1f1f1;
             font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer;
         }
-        .close-modal:hover, .close-modal:focus { color: #bbb; text-decoration: none; cursor: pointer; }
-        @keyframes zoom { from {transform:scale(0.8); opacity:0} to {transform:scale(1); opacity:1} }
-        .leaflet-popup-content { min-width: 320px !important; }
-        .leaflet-popup-content-wrapper { border-radius: 16px !important; }
 
-        /* --- DASHBOARD (Colores Nuevos) --- */
+        /* ================================================== */
+        /* --- 6. DASHBOARD CORREGIDO (CENTRO Y ANIMACIÓN) --- */
+        /* ================================================== */
+        
+        /* Fondo Oscuro con Centrado Flexbox */
+        .modal-overlay {
+            display: none; /* JS lo activa con 'flex' */
+            position: fixed; z-index: 99999;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(4px);
+            
+            /* ESTO CENTRA LA TARJETA PERFECTAMENTE */
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* La Tarjeta del Gráfico */
         .chart-card-drobot {
             background: white;
             border-radius: 16px;
-            width: 95%; max-width: 700px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            width: 90%; max-width: 700px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             display: flex; flex-direction: column;
-            animation: slideUp 0.4s ease;
+            
+            /* ANIMACIÓN SUAVE */
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
+
+        @keyframes slideUp { 
+            0% { transform: translateY(100px) scale(0.9); opacity: 0; } 
+            100% { transform: translateY(0) scale(1); opacity: 1; } 
+        }
+
+        /* Partes internas del Dashboard */
         .chart-header-drobot {
-            background: #7E1928 !important; /* Guinda Oscuro */
-            border-bottom: 3px solid #C3935D !important; /* Dorado */
-            color: white;
-            padding: 15px 25px;
+            background: #7E1928 !important; border-bottom: 3px solid #C3935D !important;
+            color: white; padding: 15px 25px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .chart-title { font-weight: 700; font-size: 18px; letter-spacing: 0.5px; }
-        .close-chart-btn { font-size: 28px; cursor: pointer; color: rgba(255,255,255,0.8); transition: 0.2s; }
-        .close-chart-btn:hover { color: white; }
+        .close-chart-btn { font-size: 28px; cursor: pointer; color: rgba(255,255,255,0.8); }
         .chart-body-drobot { padding: 25px; height: 350px; position: relative; }
         .chart-controls-drobot {
             padding: 15px 25px; background: #f8f9fa; border-top: 1px solid #eee;
@@ -270,143 +212,88 @@
         }
         .chart-btn {
             background: white; border: 1px solid #ddd; padding: 10px 20px;
-            border-radius: 30px; cursor: pointer;
-            font-family: 'Montserrat', sans-serif; font-weight: 600; color: #555;
+            border-radius: 30px; cursor: pointer; color: #555;
             transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;
         }
-        .chart-btn:hover { background: #f0f0f0; transform: translateY(-2px); }
         .chart-btn.active {
-            background: #7E1928; 
-            color: white; border-color: #7E1928;
+            background: #7E1928; color: white; border-color: #7E1928;
             box-shadow: 0 4px 10px rgba(126, 25, 40, 0.3);
         }
-        @keyframes slideUp { from {transform:translateY(50px); opacity:0} to {transform:translateY(0); opacity:1} }
 
-        /* --- MODO MÓVIL: PANEL + BOTONES ERGONÓMICOS --- */
+        /* Pestañas (Tabs) */
+        .chart-tabs {
+            display: flex; background: #f1f2f6; padding: 5px; gap: 5px; border-bottom: 1px solid #ddd;
+        }
+        .tab-btn {
+            flex: 1; border: none; background: transparent; padding: 10px;
+            cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600;
+            color: #7f8c8d; border-radius: 8px; transition: all 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .tab-btn:hover { background: rgba(0,0,0,0.05); color: #2c3e50; }
+        .tab-btn.active {
+            background: white; color: #922B21; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* ========================================= */
+        /* --- 7. SLIDER GOOGLE EARTH (OCULTO) --- */
+        /* ========================================= */
+        .btn-google-earth {
+            display: none !important; /* <--- OCULTO POR INSTRUCCIÓN DEL JEFE */
+            background-color: #333 !important; 
+            border-radius: 50% !important;
+            width: 40px !important; height: 40px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+            cursor: pointer; align-items: center; justify-content: center;
+            border: 2px solid rgba(255,255,255,0.3) !important;
+            transition: transform 0.2s, background-color 0.2s; z-index: 9999 !important;
+        }
+        .leaflet-sbs-divider, .leaflet-sbs-range, .sbs-handle-visual, .year-chip {
+            display: none !important; /* Ocultamos también los accesorios del slider */
+        }
+
+        /* ========================================= */
+        /* --- 8. RESPONSIVIDAD (MÓVIL) --- */
+        /* ========================================= */
+        .panel-movil-oculto {
+            display: none; position: fixed; bottom: -100%; left: 0; width: 100%;
+            background: white; border-radius: 20px 20px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3); z-index: 99999;
+            transition: bottom 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+            padding: 20px; max-height: 50vh; overflow-y: auto;
+        }
+        .panel-movil-activo { bottom: 0 !important; display: block; }
+        
+        #btn-cerrar-panel {
+            position: absolute; top: 10px; right: 15px;
+            background: #7E1928; color: white; border: none; border-radius: 50%;
+            width: 30px; height: 30px; font-size: 20px; cursor: pointer; z-index: 100000;
+        }
+
         @media (max-width: 768px) {
-            
-            /* A. AJUSTES DE BARRA SUPERIOR */
             #top-bar { flex: 0 0 60px; padding: 0 10px; } 
             .logo-area img { height: 35px; }
             .drobot-title { font-size: 14px; line-height: 1.1; }
             .client-area { display: none; } 
-
-            /* B. PANEL DESLIZANTE */
             .leaflet-popup { display: none !important; }
-
-            .panel-movil-oculto {
-                position: fixed;
-                bottom: -100%;
-                left: 0;
-                width: 100%;
-                background: white;
-                border-radius: 20px 20px 0 0;
-                box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
-                z-index: 99999;
-                transition: bottom 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-                padding: 20px;
-                max-height: 50vh;
-                overflow-y: auto;
-                display: block;
-            }
-
-            .panel-movil-activo { bottom: 0 !important; }
-
-            #btn-cerrar-panel {
-                position: absolute; top: 10px; right: 15px;
-                background: #7E1928; color: white;
-                border: none; border-radius: 50%;
-                width: 30px; height: 30px; font-size: 20px;
-                cursor: pointer; z-index: 100000;
-            }
-
-            #contenido-panel { font-family: 'Montserrat', sans-serif; }
-
-            /* C. MOVER BOTONES A LA ZONA DEL PULGAR */
+            
+            /* Botones abajo a la derecha */
             .leaflet-top.leaflet-left {
-                top: auto !important;
-                left: auto !important;
-                bottom: 30px !important;  
-                right: 15px !important;   
-                
-                display: flex;
-                flex-direction: column-reverse; 
-                align-items: flex-end;
+                top: auto !important; left: auto !important;
+                bottom: 30px !important; right: 15px !important;   
+                display: flex; flex-direction: column-reverse; align-items: flex-end;
             }
-
-            /* Estilo de los botones */
-            .leaflet-control {
-                margin-bottom: 15px !important;
-                margin-right: 0 !important;
-                border: none !important;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;
-            }
-
-            /* Botones de Zoom */
-            .leaflet-control-zoom {
-                border-radius: 20px !important;
-                overflow: hidden;
-            }
-            .leaflet-control-zoom a {
-                width: 45px !important; height: 45px !important;
-                line-height: 45px !important; font-size: 20px !important;
-                color: #333 !important;
-            }
-
-            /* Botón de Capas */
+            .leaflet-control { margin-bottom: 15px !important; margin-right: 0 !important; border: none !important; box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important; }
+            .leaflet-control-zoom { border-radius: 20px !important; overflow: hidden; }
+            .leaflet-control-zoom a { width: 45px !important; height: 45px !important; line-height: 45px !important; font-size: 20px !important; color: #333 !important; }
             .leaflet-control-layers-toggle {
-                width: 50px !important; height: 50px !important;
-                border-radius: 50% !important;
-                background-color: #7E1928 !important;
-                background-size: 24px !important;
+                width: 50px !important; height: 50px !important; border-radius: 50% !important;
+                background-color: #7E1928 !important; background-size: 24px !important;
                 filter: invert(1) brightness(2); 
             }
-            
             .leaflet-control-scale { display: none; }
         }
-
-       /* --- ESTILOS DEL SLIDER Y ETIQUETAS --- */
-
-    .btn-google-earth {
-        background-color: #333 !important; 
-        border-radius: 50% !important;
-        width: 40px !important;
-        height: 40px !important;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
-        cursor: pointer;
-        display: none; 
-        align-items: center;
-        justify-content: center;
-        border: 2px solid rgba(255,255,255,0.3) !important;
-        transition: transform 0.2s, background-color 0.2s;
-        z-index: 9999 !important;
-    }
-    .btn-google-earth:hover { transform: scale(1.1); background-color: #000 !important; }
-    .btn-google-earth.active { background-color: #1a73e8 !important; border-color: #fff !important; }
-    .btn-google-earth i { color: #fff !important; font-size: 18px; }
-
-    
-    .leaflet-sbs-divider { background-color: #fff; width: 2px; z-index: 9995; box-shadow: 0 0 5px rgba(0,0,0,0.8); }
-    .leaflet-sbs-range { z-index: 9996; opacity: 0; }
-    
-    
-    .sbs-handle-visual { 
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        width: 44px; height: 44px; background: white; border-radius: 50%; 
-        box-shadow: 0 2px 6px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; 
-        pointer-events: none; z-index: 9997; color: #333; 
-    }
-
-    
-    .year-chip { 
-        position: absolute; top: 90px; background: rgba(32, 33, 36, 0.9); color: white; 
-        padding: 6px 16px; border-radius: 18px; font-family: 'Montserrat', sans-serif; 
-        font-weight: 600; font-size: 13px; z-index: 9990; pointer-events: none; 
-        border: 1px solid rgba(255,255,255,0.2);
-    }
-    .chip-left { left: 80px; } .chip-right { right: 20px; }
-    @media (max-width: 768px) { .year-chip { display: none; } }
-    </style> 
+    </style>
     <title>Catastro Municipal</title>
 </head>
 
@@ -427,7 +314,9 @@
     </div> 
     
     <div id="map"></div>
-
+    <script src="data/RiesgoAlto_15.js"></script>
+    <script src="data/RiesgoMedio_14.js"></script>
+    <script src="data/RiesgoBajo_13.js"></script>
     <script src="data/AGEB_6.js"></script>
     <script src="data/Vialidades_7.js"></script>
     <script src="data/Manzanas_4.js"></script>
@@ -531,6 +420,9 @@
     
     var bounds_group = new L.featureGroup([]);
 
+    map.createPane('pane_PuntosAltos');
+    map.getPane('pane_PuntosAltos').style.zIndex = 650;
+
     // --- CAPAS BASE ---
     map.createPane('pane_OpenStreetMap_0'); map.getPane('pane_OpenStreetMap_0').style.zIndex = 400;
     var layer_OpenStreetMap_0 = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { pane: 'pane_OpenStreetMap_0', opacity: 1.0, minZoom: 1, maxZoom: 28 });
@@ -556,42 +448,177 @@
     bounds_group.addLayer(layer_dji_fly_20250722_185256_0182_1769184314666_photo_modified_5);
     map.addLayer(layer_dji_fly_20250722_185256_0182_1769184314666_photo_modified_5);
 
-    // --- CAPAS ALUMBRADO (POPUPS) ---
-    function pop_Otro_6(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Otro_6_0(feature) { return { pane: 'pane_Otro_6', icon: L.icon({ iconUrl: 'markers/Otro_6.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Otro_6'); map.getPane('pane_Otro_6').style.zIndex = 406;
-    var layer_Otro_6 = new L.geoJson(json_Otro_6, { attribution: '', interactive: true, pane: 'pane_Otro_6', onEachFeature: pop_Otro_6, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Otro_6_0(feature)); } });
+    // ==============================================================
+    // --- BLOQUE MAESTRO LIMPIO: TARJETAS, LUMINARIAS Y BACHES ---
+    // ==============================================================
+
+    // --- 1. CONFIGURACIÓN VISUAL ---
+    const COLOR_SUBTITLE = '#546e7a';
+    const COLOR_TEXT = '#2c3e50';
+    var placeholderFoto = `
+        <div style="background: #f8f9fa; border: 2px dashed #cfd8dc; border-radius: 8px; padding: 25px 0; text-align: center;">
+            <i class="fas fa-camera-retro" style="font-size: 28px; color: #b0bec5; margin-bottom: 8px;"></i>
+            <div style="font-size: 11px; font-weight: 600; color: #90a4ae; text-transform: uppercase; letter-spacing: 0.5px;">Sin Evidencia Fotográfica</div>
+        </div>`;
+
+    // --- 2. FUNCIÓN DE TARJETA PROFESIONAL (V8) ---
+    function generarTarjetaProfesional(props, fotoHtml, tituloCategoria, iconoClase, colorCabecera) {
+        var obs = props['Observaciones'];
+        var obsHtml = (obs && obs !== "" && obs.toLowerCase() !== "ninguno")
+            ? obs : '<span style="color:#aaa;">Sin observaciones registradas.</span>';
+
+        return `
+        <div style="font-family: 'Montserrat', sans-serif; min-width: 300px; overflow: hidden;">
+            <div style="background: ${colorCabecera}; color: white; padding: 12px 18px; border-radius: 12px 12px 0 0; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                <span style="font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center;">
+                    <i class="${iconoClase}" style="margin-right: 10px; font-size: 16px; color: rgba(255,255,255,0.9);"></i> ${tituloCategoria}
+                </span>
+                <span style="background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.2);">
+                    ${props['Id'] || 'S/N'}
+                </span>
+            </div>
+            <div style="padding: 18px; background: white; border: 1px solid #eee; border-top: none; border-radius: 0 0 12px 12px;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0 12px;">
+                    <tr style="display:none;"><td></td></tr>
+                    <tr>
+                        <th style="text-align:left; color:${COLOR_SUBTITLE}; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; width: 35%;">Tipo</th>
+                        <td style="color:${COLOR_TEXT}; font-size:15px; font-weight: 700;">${props['Tipo'] || 'No especificado'}</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left; color:${COLOR_SUBTITLE}; font-size:10px; text-transform:uppercase; letter-spacing:0.5px;">Estado</th>
+                        <td style="color:${COLOR_TEXT}; font-size:15px; font-weight: 700;">${props['Estado'] || 'Desconocido'}</td>
+                    </tr>
+                    <tr><td colspan="2" style="padding-top: 5px;">${fotoHtml}</td></tr>
+                    <tr>
+                        <td colspan="2" style="padding-top: 8px;">
+                            <div style="background: #f9f9f9; padding: 12px; border-radius: 8px; border-left: 3px solid #ccc; font-size: 12px; color: #555; line-height: 1.4;">
+                                <strong style="display:block; font-size:9px; color:${COLOR_SUBTITLE}; text-transform:uppercase; margin-bottom:4px;">Reporte:</strong>
+                                ${obsHtml}
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>`;
+    }
+
+    // --- 3. GENERADORES DE ICONOS (Vectores SVG) ---
+    function crearIconoLuz(color) {
+        return L.divIcon({ className: 'borrar-estilo', iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -10],
+            html: `<div style="width: 24px; height: 24px; filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.3));"><svg viewBox="0 0 100 100" width="24" height="24"><circle cx="50" cy="50" r="40" fill="${color}" stroke="white" stroke-width="12" /></svg></div>`
+        });
+    }
+    function crearIconoBache(color) {
+        return L.divIcon({ className: 'borrar-estilo', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -20],
+            html: `<div style="font-size: 32px; color: ${color}; filter: drop-shadow(0 0 1px white) drop-shadow(0 0 2px white) drop-shadow(2px 4px 6px rgba(0,0,0,0.6)); text-align:center; display:flex; justify-content:center; margin-top:-10px; margin-left:-5px;"><i class="fa fa-exclamation-triangle"></i></div>`
+        });
+    }
+
+    // --- 4. CAPAS DE LUMINARIAS (Con colores) ---
+    
+    // OTRO (#d35400)
+    function pop_Otro_6(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#d35400"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Otro_6 = new L.geoJson(json_Otro_6, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Otro_6, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#e67e22') }); } });
     bounds_group.addLayer(layer_Otro_6); map.addLayer(layer_Otro_6);
 
-    function pop_Intermitente_7(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Intermitente_7_0(feature) { return { pane: 'pane_Intermitente_7', icon: L.icon({ iconUrl: 'markers/Intermitente_7.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Intermitente_7'); map.getPane('pane_Intermitente_7').style.zIndex = 407;
-    var layer_Intermitente_7 = new L.geoJson(json_Intermitente_7, { attribution: '', interactive: true, pane: 'pane_Intermitente_7', onEachFeature: pop_Intermitente_7, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Intermitente_7_0(feature)); } });
+    // INTERMITENTE (#8e44ad)
+    function pop_Intermitente_7(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#8e44ad"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Intermitente_7 = new L.geoJson(json_Intermitente_7, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Intermitente_7, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#9b59b6') }); } });
     bounds_group.addLayer(layer_Intermitente_7); map.addLayer(layer_Intermitente_7);
 
-    function pop_Directa_8(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Directa_8_0(feature) { return { pane: 'pane_Directa_8', icon: L.icon({ iconUrl: 'markers/Directa_8.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Directa_8'); map.getPane('pane_Directa_8').style.zIndex = 408;
-    var layer_Directa_8 = new L.geoJson(json_Directa_8, { attribution: '', interactive: true, pane: 'pane_Directa_8', onEachFeature: pop_Directa_8, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Directa_8_0(feature)); } });
+    // DIRECTA (#f39c12)
+    function pop_Directa_8(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#f39c12"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Directa_8 = new L.geoJson(json_Directa_8, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Directa_8, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#f1c40f') }); } });
     bounds_group.addLayer(layer_Directa_8); map.addLayer(layer_Directa_8);
 
-    function pop_Daado_9(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Daado_9_0(feature) { return { pane: 'pane_Daado_9', icon: L.icon({ iconUrl: 'markers/Daado_9.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Daado_9'); map.getPane('pane_Daado_9').style.zIndex = 409;
-    var layer_Daado_9 = new L.geoJson(json_Daado_9, { attribution: '', interactive: true, pane: 'pane_Daado_9', onEachFeature: pop_Daado_9, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Daado_9_0(feature)); } });
+    // DAÑADO (#c0392b)
+    function pop_Daado_9(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#c0392b"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Daado_9 = new L.geoJson(json_Daado_9, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Daado_9, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#e74c3c') }); } });
     bounds_group.addLayer(layer_Daado_9); map.addLayer(layer_Daado_9);
 
-    function pop_Bueno_10(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Bueno_10_0(feature) { return { pane: 'pane_Bueno_10', icon: L.icon({ iconUrl: 'markers/Bueno_10.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Bueno_10'); map.getPane('pane_Bueno_10').style.zIndex = 410;
-    var layer_Bueno_10 = new L.geoJson(json_Bueno_10, { attribution: '', interactive: true, pane: 'pane_Bueno_10', onEachFeature: pop_Bueno_10, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Bueno_10_0(feature)); } });
+    // BUENO (#27ae60)
+    function pop_Bueno_10(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#27ae60"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Bueno_10 = new L.geoJson(json_Bueno_10, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Bueno_10, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#2ecc71') }); } });
     bounds_group.addLayer(layer_Bueno_10); map.addLayer(layer_Bueno_10);
 
-    function pop_Apagada_11(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Id</th><td>' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Tipo</th><td>' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Estado</th><td>' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><th scope="row">Foto_evidencia</th><td>' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><th scope="row">Observaciones</th><td>' + ((feature.properties['Observaciones'] !== null && feature.properties['Observaciones'] !== "") ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : 'ninguno') + '</td></tr></table>', feature), { maxHeight: 400 }); }
-    function style_Apagada_11_0(feature) { return { pane: 'pane_Apagada_11', icon: L.icon({ iconUrl: 'markers/Apagada_11.svg', iconSize: [22.8, 22.8] }) }; }
-    map.createPane('pane_Apagada_11'); map.getPane('pane_Apagada_11').style.zIndex = 411;
-    var layer_Apagada_11 = new L.geoJson(json_Apagada_11, { attribution: '', interactive: true, pane: 'pane_Apagada_11', onEachFeature: pop_Apagada_11, pointToLayer: function (feature, latlng) { return L.marker(latlng, style_Apagada_11_0(feature)); } });
+    // APAGADA (#2c3e50)
+    function pop_Apagada_11(feature, layer) {
+        var props = feature.properties;
+        var foto = (props['Foto_evidencia']) ? `<img src="images/${props['Foto_evidencia']}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        layer.bindPopup(generarTarjetaProfesional(props, foto, "ALUMBRADO PÚBLICO", "fas fa-lightbulb", "#2c3e50"), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+    var layer_Apagada_11 = new L.geoJson(json_Apagada_11, { attribution: '', interactive: true, pane: 'pane_PuntosAltos', onEachFeature: pop_Apagada_11, pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoLuz('#34495e') }); } });
     bounds_group.addLayer(layer_Apagada_11); map.addLayer(layer_Apagada_11);
+
+    // --- 5. CAPAS DE BACHES (Con colores) ---
+    function pop_BacheGeneral(feature, layer, colorRiesgo) {
+        var props = feature.properties;
+        var nombreFoto = props['Foto_Evidencia']; 
+        if (nombreFoto && nombreFoto.includes('/')) { nombreFoto = nombreFoto.split('/').pop(); }
+        var fotoHtml = (nombreFoto) ? `<img src="images/${nombreFoto}" style="width:100%; border-radius:8px; cursor:pointer;" onclick="openImageModal(this.src)">` : placeholderFoto;
+        var propsAdaptados = {
+            'Id': props['ID_Reporte'], 'Tipo': props['Tamano'], 'Estado': props['Estado_reparacion'], 
+            'Observaciones': props['Peligro'] ? `Nivel de Peligro: ${props['Peligro']}` : ''
+        };
+        layer.bindPopup(generarTarjetaProfesional(propsAdaptados, fotoHtml, "REPORTE DE BACHE", "fas fa-car-crash", colorRiesgo), { maxHeight: 500 });
+        layer.on('click', function(e) { map.flyTo(e.latlng, 19); });
+    }
+
+    // RIESGO ALTO (#c0392b)
+    var layer_RiesgoAlto;
+    if (typeof json_RiesgoAlto_15 !== 'undefined') {
+        layer_RiesgoAlto = new L.geoJson(json_RiesgoAlto_15, { pane: 'pane_PuntosAltos',
+            pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoBache('#ff0000') }); },
+            onEachFeature: function(f, l) { pop_BacheGeneral(f, l, '#c0392b'); }
+        });
+        bounds_group.addLayer(layer_RiesgoAlto); map.addLayer(layer_RiesgoAlto);
+    } else { layer_RiesgoAlto = L.layerGroup(); }
+
+    // RIESGO MEDIO (#d35400)
+    var layer_RiesgoMedio;
+    if (typeof json_RiesgoMedio_14 !== 'undefined') {
+        layer_RiesgoMedio = new L.geoJson(json_RiesgoMedio_14, { pane: 'pane_PuntosAltos',
+            pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoBache('#ff9f43') }); },
+            onEachFeature: function(f, l) { pop_BacheGeneral(f, l, '#d35400'); }
+        });
+        bounds_group.addLayer(layer_RiesgoMedio); map.addLayer(layer_RiesgoMedio);
+    } else { layer_RiesgoMedio = L.layerGroup(); }
+
+    // RIESGO BAJO (#f39c12)
+    var layer_RiesgoBajo;
+    if (typeof json_RiesgoBajo_13 !== 'undefined') {
+        layer_RiesgoBajo = new L.geoJson(json_RiesgoBajo_13, { pane: 'pane_PuntosAltos',
+            pointToLayer: function (f, l) { return L.marker(l, { icon: crearIconoBache('#f1c40f') }); },
+            onEachFeature: function(f, l) { pop_BacheGeneral(f, l, '#f39c12'); }
+        });
+        bounds_group.addLayer(layer_RiesgoBajo); map.addLayer(layer_RiesgoBajo);
+    } else { layer_RiesgoBajo = L.layerGroup(); }
 
     function pop_Alumbradopostes_12(feature, layer) { layer.bindPopup(removeEmptyRowsFromPopupContent('<table><tr><td colspan="2">' + (feature.properties['fid'] !== null ? autolinker.link(String(feature.properties['fid']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Id'] !== null ? autolinker.link(String(feature.properties['Id']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Tipo'] !== null ? autolinker.link(String(feature.properties['Tipo']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Estado'] !== null ? autolinker.link(String(feature.properties['Estado']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Foto_evidencia'] !== null ? '<img src="images/' + String(feature.properties['Foto_evidencia']).replace(/[\\/:]/g, '_').trim().replace(/'/g, '\'').replace(/"/g, '&quot;') + '">' : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Observaciones'] !== null ? autolinker.link(String(feature.properties['Observaciones']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr><tr><td colspan="2">' + (feature.properties['Cuenta'] !== null ? autolinker.link(String(feature.properties['Cuenta']).replace(/'/g, '\'').toLocaleString()) : '') + '</td></tr></table>', feature), { maxHeight: 400 }); }
     function style_Alumbradopostes_12_0(feature) { return { pane: 'pane_Alumbradopostes_12', icon: L.icon({ iconUrl: 'markers/Alumbradopostes_12.svg', iconSize: [0, 0] }) }; }
@@ -631,7 +658,7 @@
         layer_Manzanas = new L.geoJson(json_Manzanas_4, {
             
             renderer: dibujanteCompartido, 
-            smoothFactor: 1.5,             
+            smoothFactor: 3,             
             
             style: function(feature) {
                 return {
@@ -746,7 +773,7 @@
         layer_Vialidades = new L.geoJson(json_Vialidades_7, {
             
             renderer: dibujanteCompartido,
-            smoothFactor: 1.5, 
+            smoothFactor: 3, 
 
             style: function(feature) {
                 return {
@@ -936,17 +963,36 @@
         },
 
         // GRUPO 3: INFRAESTRUCTURA (Lámparas)
+        // GRUPO 3: INFRAESTRUCTURA (CON SUBGRUPOS)
         {
-            label: '<b>Infraestructura</b>',
+            label: '<b>Infraestructura Urbana</b>',
             selectAllCheckbox: true,
-            collapsed: true,
             children: [
-                {label: '⚫ Apagada', layer: layer_Apagada_11},
-                {label: '🟢 Operativo (Bueno)', layer: layer_Bueno_10},
-                {label: '🔴 Dañado', layer: layer_Daado_9},
-                {label: '🟡 Directa', layer: layer_Directa_8},
-                {label: '🟣 Intermitente', layer: layer_Intermitente_7},
-                {label: '🟠 Otro', layer: layer_Otro_6},
+                // SUBGRUPO A: LUMINARIAS
+                {
+                    label: '💡 Alumbrado Público',
+                    selectAllCheckbox: true,
+                    collapsed: true, // Que empiece cerrado para no ocupar mucho espacio
+                    children: [
+                        {label: '⚫ Apagada', layer: layer_Apagada_11},
+                        {label: '🟢 Operativo (Bueno)', layer: layer_Bueno_10},
+                        {label: '🔴 Dañado', layer: layer_Daado_9},
+                        {label: '🟡 Directa', layer: layer_Directa_8},
+                        {label: '🟣 Intermitente', layer: layer_Intermitente_7},
+                        {label: '🟠 Otro', layer: layer_Otro_6},
+                    ]
+                },
+                // SUBGRUPO B: BACHES (PAVIMENTO)
+                {
+                    label: '🚧 Estado del Pavimento (baches)',
+                    selectAllCheckbox: true,
+                    collapsed: false, // Este abierto para que se vea la novedad
+                    children: [
+                        {label: '🔺 Riesgo Alto', layer: layer_RiesgoAlto},
+                        {label: '🔸 Riesgo Medio', layer: layer_RiesgoMedio},
+                        {label: '⚠️ Riesgo Bajo', layer: layer_RiesgoBajo},
+                    ]
+                }
             ]
         },
 
@@ -1086,7 +1132,7 @@
     map.on("layerremove", function(){
         resetLabels([layer_Otro_6,layer_Intermitente_7,layer_Directa_8,layer_Daado_9,layer_Bueno_10,layer_Apagada_11]);
     });
-
+/*
     var sliderControl = null;
     var visualHandle = null; 
     var labelLeft = null;
@@ -1213,7 +1259,7 @@
         }
     }
 
-    setTimeout(verificarVisibilidadBoton, 500);
+    setTimeout(verificarVisibilidadBoton, 500);*/
         
         </script>    
         
@@ -1249,9 +1295,24 @@
 
     <div id="chart-modal" class="modal-overlay" onclick="closeChart()">
     <div class="chart-card-drobot" onclick="event.stopPropagation()">
+        
         <div class="chart-header-drobot">
-            <span class="chart-title"><i class="fas fa-chart-pie"></i> Diagnóstico Estadístico</span>
+            <span class="chart-title" id="chartTitle">
+                <i class="fas fa-chart-pie"></i> Estadísticas Generales
+            </span>
             <span class="close-chart-btn" onclick="closeChart()">&times;</span>
+        </div>
+
+        <div class="chart-tabs">
+            <button class="tab-btn active" onclick="switchTopic('luminarias', this)">
+                <i class="fas fa-lightbulb"></i> Alumbrado
+            </button>
+            <button class="tab-btn" onclick="switchTopic('baches', this)">
+                <i class="fas fa-car-crash"></i> Baches
+            </button>
+            <button class="tab-btn" onclick="switchTopic('general', this)">
+                <i class="fas fa-city"></i> Resumen
+            </button>
         </div>
         
         <div class="chart-body-drobot">
@@ -1259,18 +1320,10 @@
         </div>
         
         <div class="chart-controls-drobot">
-            <button class="chart-btn active" onclick="updateChartType('bar', this)" title="Barras">
-                <i class="fas fa-chart-bar"></i> Barras
-            </button>
-            <button class="chart-btn" onclick="updateChartType('doughnut', this)" title="Dona">
-                 <i class="fas fa-circle-notch"></i> Dona
-            </button>
-            <button class="chart-btn" onclick="updateChartType('pie', this)" title="Pastel">
-                <i class="fas fa-chart-pie"></i> Pastel
-            </button>
-             <button class="chart-btn" onclick="updateChartType('line', this)" title="Tendencia">
-                <i class="fas fa-chart-line"></i> Línea
-            </button>
+            <button class="chart-btn active" onclick="updateChartType('bar', this)"><i class="fas fa-chart-bar"></i></button>
+            <button class="chart-btn" onclick="updateChartType('doughnut', this)"><i class="fas fa-circle-notch"></i></button>
+            <button class="chart-btn" onclick="updateChartType('pie', this)"><i class="fas fa-chart-pie"></i></button>
+            <button class="chart-btn" onclick="updateChartType('line', this)"><i class="fas fa-chart-line"></i></button>
         </div>
     </div>
 </div>
@@ -1363,117 +1416,170 @@
 </style>
 
 <script>
-    // --- 1. BOTÓN EN EL MAPA ---
+    // --- LÓGICA DASHBOARD MULTI-TEMA V2 ---
+
+    // 1. Botón Flotante en el Mapa
     L.Control.Graph = L.Control.extend({
         onAdd: function(map) {
-            // Usamos el icono de pastel de FontAwesome para que se vea pro
             var div = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            div.innerHTML = '<a href="#" title="Ver Dashboard" role="button" onclick="openChart(event)" style="display:flex; align-items:center; justify-content:center;"><i class="fas fa-chart-pie" style="font-size:20px;"></i></a>';
+            div.innerHTML = '<a href="#" title="Estadísticas" role="button" onclick="openChart(event)" style="display:flex; align-items:center; justify-content:center; width:34px; height:34px;"><i class="fas fa-chart-pie" style="font-size:18px; color:#555;"></i></a>';
             return div;
         }
     });
     new L.Control.Graph({ position: 'topleft' }).addTo(map);
 
-    // --- 2. LÓGICA AVANZADA DE GRÁFICAS ---
-    var myChart; 
-    var globalData = [];
-    var globalLabels = ['Apagada', 'Operativo', 'Dañado', 'Directa', 'Intermitente', 'Otro'];
-    var globalColors = ['#333333', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', '#e67e22'];
+    // 2. Variables Globales
+    var myChart;
+    var currentTopic = 'luminarias'; // Tema por defecto
 
-    // Función para abrir el modal y cargar datos por primera vez
-    function openChart(e) {
-        if(e) e.preventDefault();
-        document.getElementById("chart-modal").style.display = "flex";
-        document.getElementById("chart-modal").style.alignItems = "center";
-        document.getElementById("chart-modal").style.justifyContent = "center";
+    // DATOS (Se calculan al abrir)
+    var dataLuminarias = {};
+    var dataBaches = {};
+    var dataGeneral = {};
 
-        if (globalData.length > 0) {
-             resetButtons();
-             document.querySelector('.chart-btn[onclick*="bar"]').classList.add('active');
-             updateChartType('bar', null); 
-             return;
-        }
+    function calcularDatos() {
+        // A. LUMINARIAS (Se queda igual)
+        dataLuminarias = {
+            labels: ['Apagada', 'Operativo', 'Dañado', 'Directa', 'Intermitente', 'Otro'],
+            data: [
+                (typeof json_Apagada_11 !== 'undefined' ? json_Apagada_11.features.length : 0),     // [0]
+                (typeof json_Bueno_10 !== 'undefined' ? json_Bueno_10.features.length : 0),       // [1] <-- ESTAS SON LAS BUENAS
+                (typeof json_Daado_9 !== 'undefined' ? json_Daado_9.features.length : 0),         // [2]
+                (typeof json_Directa_8 !== 'undefined' ? json_Directa_8.features.length : 0),     // [3]
+                (typeof json_Intermitente_7 !== 'undefined' ? json_Intermitente_7.features.length : 0), // [4]
+                (typeof json_Otro_6 !== 'undefined' ? json_Otro_6.features.length : 0)            // [5]
+            ],
+            colors: ['#34495e', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', '#e67e22']
+        };
 
-        // --- CONTAR DATOS UNA SOLA VEZ ---
-        globalData = [
-            json_Apagada_11.features.length,
-            json_Bueno_10.features.length,
-            json_Daado_9.features.length,
-            json_Directa_8.features.length,
-            json_Intermitente_7.features.length,
-            json_Otro_6.features.length
-        ];
+        // B. BACHES (Se queda igual)
+        dataBaches = {
+            labels: ['Riesgo Alto', 'Riesgo Medio', 'Riesgo Bajo'],
+            data: [
+                (typeof json_RiesgoAlto_15 !== 'undefined' ? json_RiesgoAlto_15.features.length : 0),
+                (typeof json_RiesgoMedio_14 !== 'undefined' ? json_RiesgoMedio_14.features.length : 0),
+                (typeof json_RiesgoBajo_13 !== 'undefined' ? json_RiesgoBajo_13.features.length : 0)
+            ],
+            colors: ['#c0392b', '#d35400', '#f39c12']
+        };
 
-        createChart('bar');
+        // --- C. GENERAL (CORREGIDO: SOLO PROBLEMAS) ---
+        
+        // 1. Calcular fallas de luz (Total menos las "Operativo")
+        var totalLuces = dataLuminarias.data.reduce((a, b) => a + b, 0);
+        var lucesBuenas = dataLuminarias.data[1]; // El índice 1 es 'Operativo'
+        var fallasAlumbrado = totalLuces - lucesBuenas; // Solo contamos las malas
+
+        // 2. Calcular total de baches
+        var totalBaches = dataBaches.data.reduce((a, b) => a + b, 0);
+        
+        dataGeneral = {
+            labels: ['Fallas de Alumbrado', 'Baches Registrados'], // Etiquetas claras
+            data: [fallasAlumbrado, totalBaches],
+            // Usamos colores de "Alerta" (Rojo vs Naranja)
+            colors: ['#c0392b', '#e67e22'] 
+        };
     }
 
-    // Función para CERRAR
+    // 3. Abrir Dashboard
+    function openChart(e) {
+        if(e) e.preventDefault();
+        calcularDatos(); // Recalcular siempre por si cambiaron filtros
+        document.getElementById("chart-modal").style.display = "flex";
+        
+        // Iniciar en la pestaña por defecto
+        switchTopic('luminarias', document.querySelector('.tab-btn')); 
+    }
+
     function closeChart() {
         document.getElementById("chart-modal").style.display = "none";
     }
 
-    // --- FUNCIÓN CLAVE: CAMBIAR EL TIPO DE GRÁFICA ---
-    function updateChartType(newType, btnElement) {
-        if (btnElement) {
-            resetButtons();
-            btnElement.classList.add('active'); 
+    // 4. CAMBIAR TEMA (PESTAÑAS)
+    function switchTopic(topic, btn) {
+        currentTopic = topic;
+        
+        // Actualizar botones visualmente
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        else document.querySelectorAll('.tab-btn')[0].classList.add('active');
+
+        // Seleccionar datos según el tema
+        var dataset, titulo;
+        if (topic === 'luminarias') {
+            dataset = dataLuminarias;
+            titulo = "Estado del Alumbrado";
+        } else if (topic === 'baches') {
+            dataset = dataBaches;
+            titulo = "Reporte de Baches";
+        } else {
+            dataset = dataGeneral;
+            titulo = "Diagnóstico de Problemas";
         }
 
-        if (myChart) {
-            myChart.destroy();
-        }
+        // Actualizar título
+        document.getElementById('chartTitle').innerHTML = `<i class="fas fa-chart-pie"></i> ${titulo}`;
 
-        createChart(newType);
+        // Renderizar gráfica
+        renderChart(dataset);
     }
 
-    function resetButtons() {
-         var btns = document.querySelectorAll('.chart-btn');
-         btns.forEach(btn => btn.classList.remove('active'));
-    }
-
-    function createChart(type) {
+    // 5. RENDERIZAR GRÁFICA
+    // 5. RENDERIZAR GRÁFICA (CORREGIDA)
+    function renderChart(dataset, type = 'bar') {
         var ctx = document.getElementById('drobotChart').getContext('2d');
         
-        var config = {
+        if (myChart) myChart.destroy(); 
+
+        myChart = new Chart(ctx, {
             type: type,
             data: {
-                labels: globalLabels,
+                labels: dataset.labels,
                 datasets: [{
                     label: 'Cantidad',
-                    data: globalData,
-                    backgroundColor: globalColors,
+                    data: dataset.data,
+                    backgroundColor: dataset.colors, // Colorea las barras y los puntos
+                    
+                    /* --- CORRECCIÓN AQUÍ --- */
+                    // Si es 'line', la línea es Gris Oscuro (#555). Si es barra/pastel, el borde es Blanco.
+                    borderColor: type === 'line' ? '#555555' : '#ffffff',
+                    
                     borderWidth: 2,
-                    borderColor: '#ffffff',
-                    borderRadius: type === 'bar' ? 8 : 0, 
-                    hoverOffset: 10 
+                    fill: false, // Evita que la línea rellene el fondo de color
+                    tension: 0.3 // Suaviza un poco las curvas de la línea
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { 
-                        display: type !== 'bar' && type !== 'line', 
-                        position: 'bottom',
-                         labels: { font: { family: 'Montserrat', size: 12 } }
-                    },
+                    legend: { display: type !== 'bar', position: 'bottom' },
                     tooltip: {
-                        backgroundColor: '#0b1c2c',
-                        titleFont: { family: 'Montserrat' },
-                        bodyFont: { family: 'Montserrat' }
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10
                     }
                 },
                 scales: {
                     x: { display: type === 'bar' || type === 'line' },
                     y: { display: type === 'bar' || type === 'line', beginAtZero: true }
-                },
-                 elements: {
-                    line: { tension: 0.4 } 
                 }
             }
-        };
+        });
+    }
 
-        myChart = new Chart(ctx, config);
+    // 6. CAMBIAR TIPO DE GRÁFICA (Botones de abajo)
+    function updateChartType(newType, btn) {
+        // Actualizar estilo botones
+        document.querySelectorAll('.chart-controls-drobot .chart-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Recuperar datos actuales y redibujar
+        var dataset;
+        if (currentTopic === 'luminarias') dataset = dataLuminarias;
+        else if (currentTopic === 'baches') dataset = dataBaches;
+        else dataset = dataGeneral;
+
+        renderChart(dataset, newType);
     }
 
     // --- LÓGICA DEL PANEL MÓVIL ---

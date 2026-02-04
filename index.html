@@ -1246,13 +1246,15 @@
 </div>
     
     <script>
-        function closeModal() {
-            document.getElementById("image-modal").style.display = "none";
-        }
+    function closeModal() {
+        document.getElementById("image-modal").style.display = "none";
+    }
 
-        document.addEventListener('click', function(e) {
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.tagName === 'IMG') {
             
-            if (e.target && e.target.tagName === 'IMG' && e.target.closest('.leaflet-popup-content')) {
+   
+            if (e.target.closest('.leaflet-popup-content') || e.target.closest('#panel-movil')) {
                 
                 e.preventDefault();
                 e.stopPropagation();
@@ -1260,13 +1262,11 @@
                 var modal = document.getElementById("image-modal");
                 var modalImg = document.getElementById("full-image");
                 
-                modal.style.display = "flex";
-                modal.style.alignItems = "center";
-                modal.style.justifyContent = "center";
-                
+                modal.style.display = "flex"; 
                 modalImg.src = e.target.src;
             }
-        });
+        }
+    });
     </script>
 
 
